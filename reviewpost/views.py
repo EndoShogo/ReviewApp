@@ -11,10 +11,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages as django_messages
 from django.http import JsonResponse
 
-from .forms import CustomUserCreationForm
+from django.contrib.auth.forms import UserCreationForm
 
 class SignUpView(CreateView):
-    form_class = CustomUserCreationForm
+    form_class = UserCreationForm
     template_name = 'signup.html'
     success_url = reverse_lazy('login')
 
