@@ -131,3 +131,4 @@ MEDIA_URL = '/media_image/'
 
 LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/list/'
+LOGOUT_REDIRECT_URL = '/login/'

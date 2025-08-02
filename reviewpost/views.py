@@ -18,22 +18,13 @@ class SignUpView(CreateView):
     template_name = 'signup.html'
     success_url = reverse_lazy('login')
 
-def loginview(request):
-     if request.method == 'POST':
-          username = request.POST.get('username_data')
-          password = request.POST.get('password_data')
-          user = authenticate(request,username=username,password=password)
-          if user is not None:
-               login(request,user)
-               return redirect('list')
-          else:
-               return render(request,'login.html',{})
-     else:
-          return render(request,'login.html',{})
+from django.contrib.auth.views import LoginView, LogoutView
 
-def logoutview(request):
-    logout(request)
-    return redirect('login')
+class CustomLoginView(LoginView):
+    template_name = 'login.html'
+
+class CustomLogoutView(LogoutView):
+    pass
 
 @login_required(login_url='/login')
 def listview(request):
