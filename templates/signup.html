@@ -1,17 +1,32 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
-<div class="container">
-<form class="form-signin" method="post">{% csrf_token %}
-    <h1 class = "h3 mb-3 font-weight-normal">会員登録をする</h1>
-    {% if error %}
-    {{ error }}
-    {% endif %}
-    <input type="text" id="inputEmail" class="form-control" placeholder="ユーザ名" name="username_data" required="" autofocus="">
-    <input type="password" id="inputPassword" class="form-control" placeholder="パスワード" name="password_data" required="">
-    <button class="btn btn-lg btn-primary btn-block" type="submit">会員登録をする</button>
-    <p class="mt-5 mt-3 text-muted">© 2017-2021</p>
-</form>
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">サインアップ</h3>
+                </div>
+                <div class="card-body">
+                    {% if error %}
+                        <div class="alert alert-danger" role="alert">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">登録</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p>すでにアカウントをお持ちですか？ <a href="{% url 'login' %}">ログイン</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
-{% endblock content %}
+{% endblock %}

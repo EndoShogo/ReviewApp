@@ -11,17 +11,12 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages as django_messages
 from django.http import JsonResponse
 
-def signupview(request):
-    if request.method == 'POST':
-        username = request.POST.get('username_data')
-        password = request.POST.get('password_data')
-        try:
-            User.objects.create_user(username=username,password=password)
-            return redirect('login')
-        except IntegrityError:
-                return render(request,'signup.html',{'error':'このユーザーはすでに登録されています'})
-    else:
-        return render(request,'signup.html')
+from .forms import CustomUserCreationForm
+
+class SignUpView(CreateView):
+    form_class = CustomUserCreationForm
+    template_name = 'signup.html'
+    success_url = reverse_lazy('login')
 
 def loginview(request):
      if request.method == 'POST':

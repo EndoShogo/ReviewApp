@@ -1,11 +1,11 @@
 from django.urls import path
-from .views import signupview,loginview,logoutview,listview,detailview,CreateClass,columnview,profileview,ProfileUpdateView,inboxview,message_detailview,send_messageview,like_review
+from .views import SignUpView, loginview,logoutview,listview,detailview,CreateClass,columnview,profileview,ProfileUpdateView,inboxview,message_detailview,send_messageview,like_review
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('', listview, name='list'),  # トップページを追加
-    path('signup/',signupview,name='signup'),
+    path('signup/', SignUpView.as_view(), name='signup'),
     path('login/', loginview , name='login'),
     path('logout/', logoutview, name='logout'),
     path('list/',listview , name='list'),
