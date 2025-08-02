@@ -3,9 +3,6 @@
 # Exit on error
 set -e
 
-# Install system dependencies
-apt-get update && apt-get install -y libsqlite3-dev
-
 # Install Python dependencies
 python3 -m pip install -r requirements.txt
 

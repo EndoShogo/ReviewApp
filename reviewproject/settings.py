@@ -72,6 +72,8 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'reviewproject.wsgi.application'
 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
 
 # Database for local development
 DATABASES = {
