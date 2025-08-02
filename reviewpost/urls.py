@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
+    path('', listview, name='list'),  # トップページを追加
     path('signup/',signupview,name='signup'),
     path('login/', loginview , name='login'),
     path('logout/', logoutview, name='logout'),
