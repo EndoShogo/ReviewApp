@@ -1,0 +1,97 @@
+{%  extends 'base.html' %}
+
+{% block header %}
+{% endblock header %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <h5 class="card-header">{{ object.title }}</h5>
+        <div class="card-body">
+            <h5 class="card-title">投稿者: <a href="{% url 'profile' object.author.username %}" class="text-decoration-none">{{ object.author }}</a></h5>
+            <h6 class="card-title">レビュー内容:{{ object.content }}</h6>
+            <h6 class="card-title">レビュー内容が参考になった人:{{ object.useful_num }}</h6>
+            
+            <!-- いいね機能 -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-primary like-btn" data-review-id="{{ object.id }}" data-liked="{% if user in object.likes.all %}true{% else %}false{% endif %}">
+                        <i class="bi bi-hand-thumbs-up{% if user in object.likes.all %}-fill{% endif %}"></i>
+                        <span class="like-count">{{ object.total_likes }}</span>
+                    </button>
+                </div>
+                <a href="{% url 'list' %}" class="btn btn-primary">一覧に戻る</a>
+            </div>
+            
+            <small class="text-muted">
+                <i class="bi bi-clock"></i> {{ object.created_at|date:"Y年m月d日 H:i" }}
+            </small>
+        </div>
+    </div>
+</div>
+
+<!-- CSSでアニメーション追加 -->
+<style>
+/* 投稿者名のリンクホバー効果 */
+.card-title a {
+    color: #007bff;
+    transition: color 0.2s;
+}
+.card-title a:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}
+
+/* いいねボタンのホバー効果 */
+.like-btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+}
+
+.like-btn.liked {
+    background-color: #007bff;
+    color: white;
+}
+</style>
+
+<!-- JavaScript for いいね機能 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButtons = document.querySelectorAll('.like-btn');
+    
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.dataset.reviewId;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch(`/like/${reviewId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.liked) {
+                    this.classList.add('liked');
+                    this.querySelector('i').classList.remove('bi-hand-thumbs-up');
+                    this.querySelector('i').classList.add('bi-hand-thumbs-up-fill');
+                } else {
+                    this.classList.remove('liked');
+                    this.querySelector('i').classList.remove('bi-hand-thumbs-up-fill');
+                    this.querySelector('i').classList.add('bi-hand-thumbs-up');
+                }
+                this.querySelector('.like-count').textContent = data.total_likes;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+</script>
+
+<!-- CSRF Token for JavaScript -->
+{% csrf_token %}
+{%  endblock content %}

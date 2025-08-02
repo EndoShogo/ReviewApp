@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>メッセージ</h2>
+                <a href="{% url 'send_message' %}" class="btn btn-primary">
+                    <i class="bi bi-plus"></i> 新規メッセージ
+                </a>
+            </div>
+            
+            <!-- タブ -->
+            <ul class="nav nav-tabs" id="messageTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="received-tab" data-bs-toggle="tab" data-bs-target="#received" type="button" role="tab">
+                        受信メッセージ ({{ received_messages.count }})
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="sent-tab" data-bs-toggle="tab" data-bs-target="#sent" type="button" role="tab">
+                        送信メッセージ ({{ sent_messages.count }})
+                    </button>
+                </li>
+            </ul>
+            
+            <!-- タブコンテンツ -->
+            <div class="tab-content" id="messageTabsContent">
+                <!-- 受信メッセージ -->
+                <div class="tab-pane fade show active" id="received" role="tabpanel">
+                    {% if received_messages %}
+                        {% for message in received_messages %}
+                            <div class="card mb-3 {% if not message.is_read %}border-primary{% endif %}">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title">
+                                                <a href="{% url 'message_detail' message.id %}" class="text-decoration-none">
+                                                    {{ message.subject }}
+                                                </a>
+                                                {% if not message.is_read %}
+                                                    <span class="badge bg-primary ms-2">新着</span>
+                                                {% endif %}
+                                            </h6>
+                                            <p class="card-text text-muted">
+                                                <small>
+                                                    <i class="bi bi-person"></i> {{ message.sender.username }} | 
+                                                    <i class="bi bi-clock"></i> {{ message.created_at|date:"Y年m月d日 H:i" }}
+                                                </small>
+                                            </p>
+                                            <p class="card-text">{{ message.content|truncatewords:30 }}</p>
+                                        </div>
+                                        <div>
+                                            <a href="{% url 'message_detail' message.id %}" class="btn btn-sm btn-outline-primary">詳細</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-inbox display-1 text-muted"></i>
+                            <p class="text-muted mt-3">受信メッセージはありません</p>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <!-- 送信メッセージ -->
+                <div class="tab-pane fade" id="sent" role="tabpanel">
+                    {% if sent_messages %}
+                        {% for message in sent_messages %}
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h6 class="card-title">
+                                                <a href="{% url 'message_detail' message.id %}" class="text-decoration-none">
+                                                    {{ message.subject }}
+                                                </a>
+                                            </h6>
+                                            <p class="card-text text-muted">
+                                                <small>
+                                                    <i class="bi bi-person"></i> {{ message.recipient.username }} | 
+                                                    <i class="bi bi-clock"></i> {{ message.created_at|date:"Y年m月d日 H:i" }}
+                                                </small>
+                                            </p>
+                                            <p class="card-text">{{ message.content|truncatewords:30 }}</p>
+                                        </div>
+                                        <div>
+                                            <a href="{% url 'message_detail' message.id %}" class="btn btn-sm btn-outline-primary">詳細</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center py-5">
+                            <i class="bi bi-send display-1 text-muted"></i>
+                            <p class="text-muted mt-3">送信メッセージはありません</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %} 

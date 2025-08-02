@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">プロフィール編集</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.bio.id_for_label }}" class="form-label">自己紹介</label>
+                            <textarea name="{{ form.bio.name }}" id="{{ form.bio.id_for_label }}" class="form-control" rows="4" placeholder="自己紹介を入力してください">{{ form.bio.value|default:'' }}</textarea>
+                            {% if form.bio.errors %}
+                                <div class="text-danger small mt-1">{{ form.bio.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.avatar.id_for_label }}" class="form-label">プロフィール画像</label>
+                            {% if user.userprofile.avatar %}
+                                <div class="mb-2">
+                                    <p class="text-muted small">現在の画像:</p>
+                                    <img src="{{ user.userprofile.avatar.url }}" class="rounded" style="width: 100px; height: 100px; object-fit: cover;">
+                                </div>
+                            {% endif %}
+                            <input type="file" name="{{ form.avatar.name }}" id="{{ form.avatar.id_for_label }}" class="form-control" accept="image/*">
+                            {% if form.avatar.errors %}
+                                <div class="text-danger small mt-1">{{ form.avatar.errors }}</div>
+                            {% endif %}
+                            <div class="form-text">JPG、PNG、GIF形式の画像をアップロードできます</div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.website.id_for_label }}" class="form-label">ウェブサイト</label>
+                            <input type="url" name="{{ form.website.name }}" id="{{ form.website.id_for_label }}" class="form-control" placeholder="https://example.com" value="{{ form.website.value|default:'' }}">
+                            {% if form.website.errors %}
+                                <div class="text-danger small mt-1">{{ form.website.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.location.id_for_label }}" class="form-label">居住地</label>
+                            <input type="text" name="{{ form.location.name }}" id="{{ form.location.id_for_label }}" class="form-control" placeholder="例: 東京都渋谷区" value="{{ form.location.value|default:'' }}">
+                            {% if form.location.errors %}
+                                <div class="text-danger small mt-1">{{ form.location.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.birth_date.id_for_label }}" class="form-label">誕生日</label>
+                            <input type="date" name="{{ form.birth_date.name }}" id="{{ form.birth_date.id_for_label }}" class="form-control" value="{{ form.birth_date.value|date:'Y-m-d'|default:'' }}">
+                            {% if form.birth_date.errors %}
+                                <div class="text-danger small mt-1">{{ form.birth_date.errors }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary me-2">保存</button>
+                            <a href="{% url 'profile' user.username %}" class="btn btn-secondary">キャンセル</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}
+
+<style>
+/* フォームのホバー効果 */
+.form-control:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* ボタンのホバー効果 */
+.btn:hover {
+    transform: translateY(-1px);
+    transition: transform 0.2s;
+}
+
+/* 画像プレビューのスタイル */
+.rounded {
+    border: 2px solid #dee2e6;
+    transition: border-color 0.2s;
+}
+
+.rounded:hover {
+    border-color: #007bff;
+}
+</style> 

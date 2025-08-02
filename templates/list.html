@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>投稿の一覧</h2>
+        <a href="{% url 'create' %}" class="btn btn-success">新規投稿</a>
+    </div>
+    
+    <!-- ソート機能 -->
+    <div class="mb-3">
+        <div class="btn-group" role="group">
+            <a href="{% url 'list' %}?sort=newest" class="btn btn-outline-primary {% if current_sort == 'newest' %}active{% endif %}">
+                新しい順
+            </a>
+            <a href="{% url 'list' %}?sort=oldest" class="btn btn-outline-primary {% if current_sort == 'oldest' %}active{% endif %}">
+                古い順
+            </a>
+            <a href="{% url 'list' %}?sort=likes" class="btn btn-outline-primary {% if current_sort == 'likes' %}active{% endif %}">
+                いいね順
+            </a>
+        </div>
+    </div>
+    
+    {% for item in object_list %}
+    <div class="card mb-3">
+        <h5 class="card-header">{{ item.title }}</h5>
+        <div class="card-body">
+            {% if item.project_image %}
+            <div class="text-center mb-3">
+                <img src="{{ item.project_image.url }}" class="img-fluid" alt="{{ item.title }}" style="max-height: 200px; object-fit: cover;">
+            </div>
+            {% endif %}
+            <h5 class="card-title">投稿者: <a href="{% url 'profile' item.author.username %}" class="text-decoration-none">{{ item.author }}</a></h5>
+            <h6 class="card-title">レビューが参考になった人: {{ item.useful_num }}</h6>
+            
+            <!-- いいね機能 -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-primary btn-sm like-btn" data-review-id="{{ item.id }}" data-liked="{% if user in item.likes.all %}true{% else %}false{% endif %}">
+                        <i class="bi bi-hand-thumbs-up{% if user in item.likes.all %}-fill{% endif %}"></i>
+                        <span class="like-count">{{ item.total_likes }}</span>
+                    </button>
+                </div>
+                <a href="{% url 'detail' item.pk %}" class="btn btn-primary">詳しく見る</a>
+            </div>
+            
+            <small class="text-muted">
+                <i class="bi bi-clock"></i> {{ item.created_at|date:"Y年m月d日 H:i" }}
+            </small>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- CSSでアニメーション追加 -->
+<style>
+.card {
+    transition: transform 0.2s;
+}
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);  
+}
+
+/* 投稿者名のリンクホバー効果 */
+.card-title a {
+    color: #007bff;
+    transition: color 0.2s;
+}
+.card-title a:hover {
+    color: #0056b3;
+    text-decoration: underline !important;
+}
+
+/* いいねボタンのホバー効果 */
+.like-btn:hover {
+    transform: scale(1.05);
+    transition: transform 0.2s;
+}
+
+.like-btn.liked {
+    background-color: #007bff;
+    color: white;
+}
+</style>
+
+<!-- CSRF Token for JavaScript -->
+{% csrf_token %}
+
+<!-- JavaScript for いいね機能 -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const likeButtons = document.querySelectorAll('.like-btn');
+    
+    likeButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const reviewId = this.dataset.reviewId;
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+            
+            fetch(`/like/${reviewId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrfToken,
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.liked) {
+                    this.classList.add('liked');
+                    this.querySelector('i').classList.remove('bi-hand-thumbs-up');
+                    this.querySelector('i').classList.add('bi-hand-thumbs-up-fill');
+                } else {
+                    this.classList.remove('liked');
+                    this.querySelector('i').classList.remove('bi-hand-thumbs-up-fill');
+                    this.querySelector('i').classList.add('bi-hand-thumbs-up');
+                }
+                this.querySelector('.like-count').textContent = data.total_likes;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+});
+</script>
+{% endblock content %}    
