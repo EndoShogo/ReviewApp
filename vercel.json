@@ -5,9 +5,9 @@
       "src": "reviewproject/wsgi.py",
       "use": "@vercel/python",
       "config": {
-        "runtime": "python3.9",
+        "runtime": "python3.11",
         "maxLambdaSize": "15mb",
-        "buildCommand": "bash build.sh"
+        "buildCommand": "bash build-vercel.sh"
       }
     }
   ],
@@ -17,8 +17,15 @@
       "dest": "/static/$1"
     },
     {
+      "src": "/media_image/(.*)",
+      "dest": "/media/$1"
+    },
+    {
       "src": "/(.*)",
       "dest": "reviewproject/wsgi.py"
     }
-  ]
+  ],
+  "env": {
+    "DJANGO_SETTINGS_MODULE": "reviewproject.settings_vercel"
+  }
 }
