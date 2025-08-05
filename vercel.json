@@ -2,12 +2,11 @@
   "version": 2,
   "builds": [
     {
-      "src": "reviewproject/wsgi.py",
+      "src": "api/index.py",
       "use": "@vercel/python",
       "config": {
         "runtime": "python3.11",
-        "maxLambdaSize": "15mb",
-        "buildCommand": "bash build-vercel.sh"
+        "maxLambdaSize": "15mb"
       }
     }
   ],
@@ -22,7 +21,7 @@
     },
     {
       "src": "/(.*)",
-      "dest": "reviewproject/wsgi.py"
+      "dest": "/api/index.py"
     }
   ],
   "env": {
