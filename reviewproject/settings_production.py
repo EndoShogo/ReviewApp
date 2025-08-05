@@ -8,7 +8,7 @@ DEBUG = False
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-ALLOWED_HOSTS = [os.environ.get('VERCEL_URL', '.vercel.app')]
+ALLOWED_HOSTS = [os.environ.get('RENDER_EXTERNAL_HOSTNAME')]
 
 # Database for production
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
