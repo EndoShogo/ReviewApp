@@ -33,9 +33,9 @@ def listview(request):
     
     if sort == 'oldest':
         object_list = ReviewModel.objects.all().order_by('created_at')
-    elif sort == 'likes':
-        # いいね数でソート（annotateを使用）
-        object_list = ReviewModel.objects.annotate(like_count=Count('likes')).order_by('-like_count')
+    # elif sort == 'likes':
+    #     # いいね数でソート（annotateを使用）
+    #     object_list = ReviewModel.objects.annotate(like_count=Count('likes')).order_by('-like_count')
     else:  # newest (デフォルト)
         object_list = ReviewModel.objects.all().order_by('-created_at')
     
