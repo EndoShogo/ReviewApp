@@ -19,12 +19,16 @@ ALLOWED_HOSTS = [
     '*'
 ]
 
-# Database for Vercel (SQLite for serverless)
+import dj_database_url
+
+# Database for Vercel Postgres
+# Vercelの環境変数 `POSTGRES_URL` を優先的に読み込む
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+    'default': dj_database_url.config(
+        default=os.environ.get('POSTGRES_URL'), 
+        conn_max_age=600, 
+        ssl_require=True
+    )
 }
 
 # Static files (CSS, JavaScript, Images)
@@ -43,8 +47,19 @@ SESSION_COOKIE_SECURE = False
 CSRF_COOKIE_SECURE = False
 
 # Static files handling
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Django 4.2 compatibility
-DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField' 
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Vercel Redis for Caching
+if 'REDIS_URL' in os.environ:
+    CACHES = {
+        "default": {
+            "BACKEND": "django_redis.cache.RedisCache",
+            "LOCATION": os.environ.get('REDIS_URL'),
+            "OPTIONS": {
+                "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            }
+        }
+    } 
