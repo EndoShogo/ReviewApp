@@ -128,3 +128,8 @@ cython_debug/
 
 # macOS
 .DS_Store
+
+render.yaml
+Procfile
+build-vercel.sh
+build.sh
