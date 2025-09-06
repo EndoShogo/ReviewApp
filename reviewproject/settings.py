@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    'reviewpost.apps.ReviewpostConfig'
+    'reviewpost.apps.ReviewpostConfig',
+    'django_extensions'
 ]
 
 MIDDLEWARE = [
