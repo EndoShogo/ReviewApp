@@ -6,3 +6,4 @@ Pillow==9.0.0
 Django==4.2.11
 setuptools
 django-redis==5.4.0
+django-extensions==3.2.3
