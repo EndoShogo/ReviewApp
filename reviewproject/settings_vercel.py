@@ -30,6 +30,9 @@ DATABASES = {
         ssl_require=True
     )
 }
+# Supavisor transaction mode (port 6543) doesn't support prepared statements
+# and requires disabling server-side cursors.
+DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
