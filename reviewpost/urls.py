@@ -18,4 +18,4 @@ urlpatterns = [
     path('send-message/', send_messageview, name='send_message'),
     path('send-message/<str:recipient_username>/', send_messageview, name='send_message_to_user'),
     path('like/<int:review_id>/', like_review, name='like_review'),
-]
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
