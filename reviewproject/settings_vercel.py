@@ -52,8 +52,16 @@ MEDIA_URL = '/media_image/'
 # Security settings for Vercel
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = False  # Vercel handles SSL
-SESSION_COOKIE_SECURE = True
-CSRF_COOKIE_SECURE = True
+
+# Session settings for Vercel
+SESSION_COOKIE_SECURE = False  # Vercel環境ではFalseに設定
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_AGE = 86400  # 24時間
+SESSION_SAVE_EVERY_REQUEST = True
+
+# CSRF settings
+CSRF_COOKIE_SECURE = False  # Vercel環境ではFalseに設定
+CSRF_COOKIE_HTTPONLY = True
 
 # Static files handling
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

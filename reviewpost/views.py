@@ -11,7 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages as django_messages
 from django.http import JsonResponse
 
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
 class SignUpView(CreateView):
     form_class = UserCreationForm
@@ -22,6 +22,23 @@ from django.contrib.auth.views import LoginView, LogoutView
 
 class CustomLoginView(LoginView):
     template_name = 'login.html'
+    form_class = AuthenticationForm
+    redirect_authenticated_user = True
+    
+    def get_success_url(self):
+        return reverse_lazy('list')
+    
+    def form_invalid(self, form):
+        # ログイン失敗時の処理
+        return super().form_invalid(form)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except Exception as e:
+            # エラーが発生した場合の処理
+            django_messages.error(request, f'ログインページの読み込み中にエラーが発生しました: {str(e)}')
+            return render(request, 'login.html', {'form': AuthenticationForm()})
 
 class CustomLogoutView(LogoutView):
     pass
