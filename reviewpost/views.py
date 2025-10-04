@@ -18,6 +18,35 @@ class SignUpView(CreateView):
     form_class = UserCreationForm
     template_name = 'signup.html'
     success_url = reverse_lazy('login')
+    
+    def form_invalid(self, form):
+        # フォームが無効な場合の処理
+        django_messages.error(self.request, '入力内容に問題があります。確認してください。')
+        return super().form_invalid(form)
+    
+    def form_valid(self, form):
+        # フォームが有効な場合の処理
+        try:
+            response = super().form_valid(form)
+            django_messages.success(self.request, 'アカウントが正常に作成されました。ログインしてください。')
+            return response
+        except Exception as e:
+            django_messages.error(self.request, f'アカウント作成中にエラーが発生しました: {str(e)}')
+            return self.form_invalid(form)
+    
+    def get(self, request, *args, **kwargs):
+        try:
+            return super().get(request, *args, **kwargs)
+        except Exception as e:
+            django_messages.error(request, f'サインアップページの読み込み中にエラーが発生しました: {str(e)}')
+            return render(request, 'signup.html', {'form': UserCreationForm()})
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            django_messages.error(request, f'サインアップ処理中にエラーが発生しました: {str(e)}')
+            return render(request, 'signup.html', {'form': UserCreationForm()})
 
 from django.contrib.auth.views import LoginView, LogoutView
 
