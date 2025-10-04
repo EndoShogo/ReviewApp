@@ -28,24 +28,33 @@ class CustomLogoutView(LogoutView):
 
 @login_required(login_url='/login')
 def listview(request):
-    # ソート機能
-    sort = request.GET.get('sort', 'newest')
-    
-    # N+1問題対策
-    base_query = ReviewModel.objects.prefetch_related('likes')
+    try:
+        # ソート機能
+        sort = request.GET.get('sort', 'newest')
+        
+        # N+1問題対策
+        base_query = ReviewModel.objects.prefetch_related('likes')
 
-    if sort == 'oldest':
-        object_list = base_query.order_by('created_at')
-    elif sort == 'likes':
-        # いいね数でソート（annotateを使用）
-        object_list = base_query.annotate(like_count=Count('likes')).order_by('-like_count')
-    else:  # newest (デフォルト)
-        object_list = base_query.order_by('-created_at')
-    
-    return render(request,'list.html',{
-        'object_list': object_list,
-        'current_sort': sort
-    })
+        if sort == 'oldest':
+            object_list = base_query.order_by('created_at')
+        elif sort == 'likes':
+            # いいね数でソート（annotateを使用）
+            object_list = base_query.annotate(like_count=Count('likes')).order_by('-like_count')
+        else:  # newest (デフォルト)
+            object_list = base_query.order_by('-created_at')
+        
+        return render(request,'list.html',{
+            'object_list': object_list,
+            'current_sort': sort
+        })
+    except Exception as e:
+        # データベースエラーの場合、空のリストを返す
+        from django.contrib import messages
+        messages.error(request, f'データの読み込み中にエラーが発生しました: {str(e)}')
+        return render(request,'list.html',{
+            'object_list': [],
+            'current_sort': 'newest'
+        })
 
 def columnview(request):
     if request.method == 'POST':
@@ -54,7 +63,7 @@ def columnview(request):
         return render(request,'login.html',{})
 
 def detailview(request,pk):
-    object = ReviewModel.objects.get(pk = pk) 
+    object = get_object_or_404(ReviewModel, pk=pk)
     return render(request, 'detail.html',{'object':object})
 
 @login_required(login_url='/login')

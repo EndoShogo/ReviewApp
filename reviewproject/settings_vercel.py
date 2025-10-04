@@ -2,12 +2,12 @@ import os
 from pathlib import Path
 from .settings import *
 
-# Build paths inside the project like this: B
-# ASE_DIR / 'subdir'.
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+# 一時的にデバッグを有効にしてエラーを調査
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'i*6jbl9g%ccgn#ufkec^@iy_kunipc8p$*6oq=hbys5se2#k(o')
@@ -17,6 +17,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
     '.vercel.app',
     '.now.sh',
+    '.onrender.com',
     '*'
 ]
 
@@ -26,14 +27,18 @@ import dj_database_url
 # Vercelの環境変数 `POSTGRES_URL` を優先的に読み込む
 DATABASES = {
     'default': dj_database_url.config(
-        default=os.environ.get('POSTGRES_URL'), 
+        default=os.environ.get('POSTGRES_URL', 'sqlite:///db.sqlite3'), 
         conn_max_age=600, 
-        ssl_require=True
+        ssl_require=False
     )
 }
-# Supavisor transaction mode (port 6543) doesn't support prepared statements
-# and requires disabling server-side cursors.
-DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+
+# Vercel Postgresの設定
+if 'POSTGRES_URL' in os.environ:
+    DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
+    DATABASES['default']['OPTIONS'] = {
+        'sslmode': 'require',
+    }
 
 # Static files (CSS, JavaScript, Images)
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
@@ -55,6 +60,27 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Django 4.2 compatibility
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# ログ設定
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': 'INFO',
+        },
+        'reviewpost': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}
 
 # Vercel Redis for Caching
 if 'REDIS_URL' in os.environ:
