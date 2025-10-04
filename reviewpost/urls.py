@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import SignUpView, CustomLoginView, CustomLogoutView, listview, detailview, CreateClass, columnview, profileview, ProfileUpdateView, inboxview, message_detailview, send_messageview, like_review
+from .views import SignUpView, CustomLoginView, CustomLogoutView, listview, detailview, CreateClass, columnview, profileview, ProfileUpdateView, inboxview, message_detailview, send_messageview, like_review, create_superuser_endpoint
 from django.conf import settings
 from django.conf.urls.static import static
 
@@ -18,4 +18,5 @@ urlpatterns = [
     path('send-message/', send_messageview, name='send_message'),
     path('send-message/<str:recipient_username>/', send_messageview, name='send_message_to_user'),
     path('like/<int:review_id>/', like_review, name='like_review'),
+    path('create-superuser/', create_superuser_endpoint, name='create_superuser'),
 ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

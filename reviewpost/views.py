@@ -9,7 +9,7 @@ from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages as django_messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
@@ -203,3 +203,58 @@ class CreateClass(CreateView):
     def form_valid(self, form):
         form.instance.author = self.request.user
         return super().form_valid(form)
+
+def create_superuser_endpoint(request):
+    """
+    Vercel環境でスーパーユーザーを作成するエンドポイント
+    GETリクエストでアクセスするとスーパーユーザーを作成
+    """
+    if request.method == 'GET':
+        try:
+            # 環境変数から認証キーをチェック（簡単なセキュリティ）
+            auth_key = request.GET.get('key', '')
+            expected_key = os.environ.get('SUPERUSER_KEY', 'vercel123')
+            
+            if auth_key != expected_key:
+                return HttpResponse('Unauthorized', status=401)
+            
+            username = request.GET.get('username', 'admin')
+            password = request.GET.get('password', 'admin123')
+            email = request.GET.get('email', 'admin@example.com')
+            
+            # 既存のユーザーをチェック
+            if User.objects.filter(username=username).exists():
+                user = User.objects.get(username=username)
+                user.is_staff = True
+                user.is_superuser = True
+                user.set_password(password)
+                user.save()
+                message = f'ユーザー "{username}" をスーパーユーザーに更新しました'
+            else:
+                # 新しいスーパーユーザーを作成
+                user = User.objects.create_superuser(
+                    username=username,
+                    password=password,
+                    email=email
+                )
+                message = f'スーパーユーザー "{username}" を作成しました'
+            
+            response = f"""
+            <html>
+            <body>
+                <h2>スーパーユーザー作成完了</h2>
+                <p>{message}</p>
+                <p><strong>ユーザー名:</strong> {username}</p>
+                <p><strong>パスワード:</strong> {password}</p>
+                <p><strong>メール:</strong> {email}</p>
+                <p><a href="/admin/">管理画面にアクセス</a></p>
+                <p><a href="/login/">ログインページ</a></p>
+            </body>
+            </html>
+            """
+            return HttpResponse(response)
+            
+        except Exception as e:
+            return HttpResponse(f'エラーが発生しました: {str(e)}', status=500)
+    
+    return HttpResponse('Method not allowed', status=405)
