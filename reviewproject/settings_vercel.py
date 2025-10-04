@@ -7,7 +7,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # 一時的にデバッグを有効にしてエラーを調査
-DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
+DEBUG = False  # 本番環境ではFalseに設定
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY', 'i*6jbl9g%ccgn#ufkec^@iy_kunipc8p$*6oq=hbys5se2#k(o')
@@ -29,7 +29,8 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.environ.get('POSTGRES_URL', 'sqlite:///db.sqlite3'), 
         conn_max_age=600, 
-        ssl_require=False
+        ssl_require=False,
+        conn_health_checks=True,
     )
 }
 
@@ -38,6 +39,12 @@ if 'POSTGRES_URL' in os.environ:
     DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
     DATABASES['default']['OPTIONS'] = {
         'sslmode': 'require',
+        'connect_timeout': 30,
+    }
+else:
+    # SQLiteの場合は設定を調整
+    DATABASES['default']['OPTIONS'] = {
+        'timeout': 30,
     }
 
 # Static files (CSS, JavaScript, Images)
@@ -73,19 +80,31 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
         },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'INFO',
+            'level': 'ERROR',
+        },
+        'django.request': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': False,
         },
         'reviewpost': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'ERROR',
         },
     },
 }
