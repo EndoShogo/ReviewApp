@@ -39,6 +39,14 @@ class CustomLoginView(LoginView):
             # エラーが発生した場合の処理
             django_messages.error(request, f'ログインページの読み込み中にエラーが発生しました: {str(e)}')
             return render(request, 'login.html', {'form': AuthenticationForm()})
+    
+    def post(self, request, *args, **kwargs):
+        try:
+            return super().post(request, *args, **kwargs)
+        except Exception as e:
+            # ログイン処理中にエラーが発生した場合
+            django_messages.error(request, f'ログイン処理中にエラーが発生しました: {str(e)}')
+            return render(request, 'login.html', {'form': AuthenticationForm()})
 
 class CustomLogoutView(LogoutView):
     pass
