@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages as django_messages
 from django.http import JsonResponse, HttpResponse
+import os
 
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 
@@ -207,54 +208,83 @@ class CreateClass(CreateView):
 def create_superuser_endpoint(request):
     """
     Vercel環境でスーパーユーザーを作成するエンドポイント
-    GETリクエストでアクセスするとスーパーユーザーを作成
     """
-    if request.method == 'GET':
-        try:
-            # 環境変数から認証キーをチェック（簡単なセキュリティ）
-            auth_key = request.GET.get('key', '')
-            expected_key = os.environ.get('SUPERUSER_KEY', 'vercel123')
-            
-            if auth_key != expected_key:
-                return HttpResponse('Unauthorized', status=401)
-            
-            username = request.GET.get('username', 'admin')
-            password = request.GET.get('password', 'admin123')
-            email = request.GET.get('email', 'admin@example.com')
-            
-            # 既存のユーザーをチェック
-            if User.objects.filter(username=username).exists():
-                user = User.objects.get(username=username)
-                user.is_staff = True
-                user.is_superuser = True
-                user.set_password(password)
-                user.save()
-                message = f'ユーザー "{username}" をスーパーユーザーに更新しました'
-            else:
-                # 新しいスーパーユーザーを作成
-                user = User.objects.create_superuser(
-                    username=username,
-                    password=password,
-                    email=email
-                )
-                message = f'スーパーユーザー "{username}" を作成しました'
-            
-            response = f"""
-            <html>
-            <body>
-                <h2>スーパーユーザー作成完了</h2>
-                <p>{message}</p>
-                <p><strong>ユーザー名:</strong> {username}</p>
-                <p><strong>パスワード:</strong> {password}</p>
-                <p><strong>メール:</strong> {email}</p>
-                <p><a href="/admin/">管理画面にアクセス</a></p>
-                <p><a href="/login/">ログインページ</a></p>
-            </body>
-            </html>
-            """
-            return HttpResponse(response)
-            
-        except Exception as e:
-            return HttpResponse(f'エラーが発生しました: {str(e)}', status=500)
-    
-    return HttpResponse('Method not allowed', status=405)
+    try:
+        username = 'admin'
+        password = 'admin123'
+        email = 'admin@example.com'
+        
+        # 既存のユーザーをチェック
+        if User.objects.filter(username=username).exists():
+            user = User.objects.get(username=username)
+            user.is_staff = True
+            user.is_superuser = True
+            user.set_password(password)
+            user.save()
+            message = f'ユーザー "{username}" をスーパーユーザーに更新しました'
+        else:
+            # 新しいスーパーユーザーを作成
+            user = User.objects.create_superuser(
+                username=username,
+                password=password,
+                email=email
+            )
+            message = f'スーパーユーザー "{username}" を作成しました'
+        
+        response = f"""
+        <html>
+        <head>
+            <title>スーパーユーザー作成完了</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container mt-5">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h3 class="text-center">スーパーユーザー作成完了</h3>
+                            </div>
+                            <div class="card-body">
+                                <p class="alert alert-success">{message}</p>
+                                <div class="mb-3">
+                                    <strong>ユーザー名:</strong> {username}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>パスワード:</strong> {password}
+                                </div>
+                                <div class="mb-3">
+                                    <strong>メール:</strong> {email}
+                                </div>
+                                <div class="d-grid gap-2">
+                                    <a href="/admin/" class="btn btn-primary">管理画面にアクセス</a>
+                                    <a href="/login/" class="btn btn-secondary">ログインページ</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        return HttpResponse(response)
+        
+    except Exception as e:
+        error_response = f"""
+        <html>
+        <head>
+            <title>エラー</title>
+            <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
+        </head>
+        <body>
+            <div class="container mt-5">
+                <div class="alert alert-danger">
+                    <h4>エラーが発生しました</h4>
+                    <p>{str(e)}</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        """
+        return HttpResponse(error_response, status=500)
