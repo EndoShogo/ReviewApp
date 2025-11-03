@@ -1,10 +1,4 @@
-了解です👌
-以下は、**README全体をまるごと1つのMarkdownコードブロック（`markdown ～ `）内に入れた完全版**です。
-このままコピペしてもGitHubで正しく表示されます👇
 
----
-
-````markdown
 # ReviewApp
 
 ReviewApp is a Django project for a community site built around sharing and reviewing projects. Users can browse other members’ work, leave reviews with media attachments, and communicate via direct messages.
