@@ -143,5 +143,5 @@ Unspecified (you may add MIT, Apache 2.0, or another open license as needed).
 ---
 
 ## 📱 Mobile UI Preview (Smartphone Screens)
-<img width="585" alt="image" src="https://github.com/user-attachments/assets/0310870e-c4b0-44e0-98f7-58c0d33f6bb8" />
+<img width="293" alt="image" src="https://github.com/user-attachments/assets/0310870e-c4b0-44e0-98f7-58c0d33f6bb8" />
 
