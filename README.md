@@ -137,5 +137,5 @@ Unspecified (you may add MIT, Apache 2.0, or another open license as needed).
 
 ---
 
-**Developed by tkgggshogo**  
+**Developed by EndoShogo**  
 📍 Built for practical Django learning, portfolio use, and university admission demonstration.
