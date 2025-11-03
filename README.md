@@ -139,3 +139,9 @@ Unspecified (you may add MIT, Apache 2.0, or another open license as needed).
 
 **Developed by EndoShogo**  
 📍 Built for practical Django learning, portfolio use, and university admission demonstration.
+
+---
+
+## 📱 Mobile UI Preview (Smartphone Screens)
+<img width="1170" height="2532" alt="image" src="https://github.com/user-attachments/assets/0310870e-c4b0-44e0-98f7-58c0d33f6bb8" />
+
